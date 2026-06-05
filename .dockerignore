@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+.npm-cache
+.git
+.env.local
+npm-debug.log*
+package
+*.tgz
+
