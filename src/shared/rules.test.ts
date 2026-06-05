@@ -10,13 +10,15 @@ describe("round scoring", () => {
   it("finds all players in the second rank group for single cards", () => {
     const result = scoreRound("single", [
       { playerId: "a", nickname: "A", cards: [c("a", "K", "spades")] },
+      { playerId: "e", nickname: "E", cards: [c("e", "K", "hearts")] },
       { playerId: "b", nickname: "B", cards: [c("b", "Q", "hearts")] },
       { playerId: "c", nickname: "C", cards: [c("c", "Q", "clubs")] },
       { playerId: "d", nickname: "D", cards: [c("d", "9", "spades")] },
     ]);
 
-    expect(result.secondPlayerIds).toEqual(["b"]);
+    expect(result.secondPlayerIds).toEqual(["b", "c"]);
     expect(result.players.find((player) => player.playerId === "b")?.penalty).toBe(1);
+    expect(result.players.find((player) => player.playerId === "c")?.penalty).toBe(1);
   });
 
   it("penalizes ten-half busts and excludes them from second-place calculation", () => {
@@ -30,6 +32,21 @@ describe("round scoring", () => {
     expect(result.secondPlayerIds).toEqual(["c"]);
     expect(result.players.find((player) => player.playerId === "d")?.isBust).toBe(true);
     expect(result.players.find((player) => player.playerId === "d")?.penalty).toBe(2);
+  });
+
+  it("treats tied top ten-half totals as first place and the next total as second", () => {
+    const result = scoreRound("tenHalf", [
+      { playerId: "a", nickname: "A", cards: [c("a1", "10"), c("a2", "Q")] },
+      { playerId: "b", nickname: "B", cards: [c("b1", "10"), c("b2", "J")] },
+      { playerId: "c", nickname: "C", cards: [c("c1", "9"), c("c2", "A")] },
+      { playerId: "d", nickname: "D", cards: [c("d1", "8"), c("d2", "2")] },
+      { playerId: "e", nickname: "E", cards: [c("e1", "7"), c("e2", "3")] },
+    ]);
+
+    expect(result.secondPlayerIds).toEqual(["c", "d", "e"]);
+    expect(result.players.find((player) => player.playerId === "c")?.penalty).toBe(2);
+    expect(result.players.find((player) => player.playerId === "d")?.penalty).toBe(2);
+    expect(result.players.find((player) => player.playerId === "e")?.penalty).toBe(2);
   });
 
   it("handles special three-card ordering", () => {

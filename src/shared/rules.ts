@@ -125,7 +125,7 @@ export function evaluateSingle(cards: Card[]) {
   const card = cards[0];
   return {
     label: cardText(card),
-    rankValue: [singleRankValue[card.rank], suitValue[card.suit]],
+    rankValue: [singleRankValue[card.rank]],
     isBust: false,
   };
 }
@@ -282,4 +282,3 @@ export function splitCardsByKind(cards: Card[], split: SplitSubmission, kind: Ro
     return card;
   });
 }
-
